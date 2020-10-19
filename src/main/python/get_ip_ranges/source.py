@@ -13,7 +13,7 @@ import requests
 from vra_ipam_utils.ipam import IPAM
 import logging
 from orionsdk import SwisClient
-import json
+import ipaddress
 
 '''
 Example payload:
@@ -40,117 +40,31 @@ def handler(context, inputs):
 
     return ipam.get_ip_ranges()
 
+
 def do_get_ip_ranges(self, auth_credentials, cert):
-    # Your implemention goes here
     username = auth_credentials["privateKeyId"]
     password = auth_credentials["privateKey"]
     hostname = self.inputs["endpoint"]["endpointProperties"]["hostName"]
 
+    requests.packages.urllib3.disable_warnings()
+
     swis = SwisClient(hostname, username, password)
-    
-    dResults = swis.query("SELECT DISTINCT GroupID, FriendlyName, Address, CIDR, Comments, Location, i.CustomProperties.Site_ID FROM IPAM.GroupNode i WHERE GroupTypeText LIKE 'Subnet' AND Address LIKE '10.28.248.%'")
-    jResults = json.dumps(dResults)
-
-
-
-    ## If many IP ranges are expected on the IPAM server, it is considered a best practice
-    ## to return them page by page instead of all at once.
-    ## The vRA IPAM Service will propagate a pageToken string with each consecutive request
-    ## until all pages are exhausted
-    # pageToken = self.inputs['pagingAndSorting'].get('pageToken', None) ## The first request that vRA sends is with 'None' pageToken
-
-
-
-    ## Plug your implementation here to collect all the ranges from the external IPAM system
-    result_ranges, next_page_token = collect_ranges(pageToken)
+    result_ranges = []
+    qResult = swis.query("SELECT DISTINCT GroupID AS id, FriendlyName AS name, Address AS addressSpaceId, CIDR AS subnetPrefixLength, Comments AS description, i.CustomProperties.Gateway as gatewayAddress, i.CustomProperties.DNS_Servers as dnsServers, i.CustomProperties.Site_ID AS siteId FROM IPAM.GroupNode i WHERE GroupTypeText LIKE 'Subnet' AND i.CustomProperties.VRA_Range = TRUE")
+    for range in qResult['results']:
+      network = ipaddress.ip_network(str(range['addressSpaceId']) + '/' + str(range['subnetPrefixLength']))
+      range['ipVersion'] = 'IPv' + str(network.version)
+      range['startIPAddress'] = str(network[10])
+      range['endIPAddress'] = str(network[-6])
+      range['dnsServerAddresses'] = [server.strip() for server in str(range['dnsServers']).split(',')]
+      range['tags'] = [{
+        "key": "Site",
+        "value": range['siteId']
+      }]
+      result_ranges.append(range)
 
     result = {
-        "ipRanges": result_ranges
+      "ipRanges": result_ranges
     }
-
-    ## Return the next page token so that vRA can process the first page and then fetch the second page or ranges with the next request
-    if next_page_token is not None:
-        result["nextPageToken"] = next_page_token
 
     return result
-
-def collect_ranges(pageToken):
-    logging.info("Collecting ranges")
-
-    range1 = {
-        "id": "us1lab-servers-10.28.248.128_26",
-
-        "name": "US1-Lab Servers 10.28.248.128/26",
-
-        "startIPAddress": "10.28.248.129",
-
-        "endIPAddress": "10.28.248.189",
-
-        "description": "labNet",
-
-        "ipVersion": "IPv4",
-
-        "addressSpaceId": "default",
-
-        "subnetPrefixLength": "26",
-
-        "gatewayAddress": "10.28.248.190",
-        
-        "dnsServerAddresses": ["140.165.150.35", "140.165.235.36"],
-
-        "dnsSearchDomains": ["tdy.teledyne.com"],
-
-        "domain": "tdy.teledyne.com",
-
-        "tags": [{
-            "key": "Building",
-            "value": "7"
-        }],
-
-        "properties": {
-        }
-    }
-
-
-    # range2 = {
-    #     "id": "range2",
-
-    #     "name": "sample name 2",
-
-    #     "startIPAddress": "10.23.117.1",
-
-    #     "endIPAddress": "10.23.117.254",
-
-    #     "description": "sampleDescription",
-
-    #     "ipVersion": "IPv4",
-
-    #     "addressSpaceId": "default",
-
-    #     "subnetPrefixLength": "24",
-
-    #     "dnsServerAddresses": ["10.10.17.3", "10.10.22.1"],
-
-    #     "dnsSearchDomains": ["com", "net", "test.local"],
-
-    #     "domain": "test.local",
-
-    #     "tags": [{
-    #         "key": "Building",
-    #         "value": "VMware main facility"
-    #     }],
-
-    #     "properties": {
-    #     }
-    # }
-
-    result = []
-    # next_page_token = None
-    # if pageToken is None:
-    #     result = [range1]
-    #     next_page_token = "87811419dec2112cda2aa29685685d650ac1f61f"
-    # else:
-    #     result = [range2]
-    result = [range1]
-
-    return result, next_page_token

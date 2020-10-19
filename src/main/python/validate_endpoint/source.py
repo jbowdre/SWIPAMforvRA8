@@ -59,18 +59,7 @@ def do_validate_endpoint(self, auth_credentials, cert):
         else:
             raise Exception("Failed to connect")
 
-        # response = requests.get("https://" + self.inputs["endpointProperties"]["hostName"], verify=cert, auth=(username, password))
 
-        # if response.status_code == 200:
-        #     return {
-        #         "message": "Validated successfully",
-        #         "statusCode": "200"
-        #     }
-        # elif response.status_code == 401:
-        #     logging.error(f"Invalid credentials error: {str(response.content)}")
-        #     raise Exception(f"Invalid credentials error: {str(response.content)}")
-        # else:
-        #     raise Exception(f"Failed to connect: {str(response.content)}")
     except Exception as e:
         """ In case of SSL validation error, a InvalidCertificateException is raised.
             So that the IPAM SDK can go ahead and fetch the server certificate
