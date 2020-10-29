@@ -2,11 +2,11 @@ FROM photon:3.0-20200609
 
 ADD target/python /ipam/python
 
-RUN tdnf install -y python3-pip.noarch python3-devel gcc glibc-devel binutils linux-api-headers shadow && \
-    pip3 install --upgrade pip setuptools && \
-    pip3 install certifi && \
-    tdnf clean all && \
-    rm -fr /var/cache/tdnf/*
+RUN tdnf install -y python3-pip.noarch python3-devel gcc glibc-devel binutils linux-api-headers shadow
+RUN pip3 install --upgrade pip setuptools
+RUN pip3 install certifi
+RUN tdnf clean all
+RUN rm -fr /var/cache/tdnf/*
 
 RUN pip3 install -r /ipam/python/allocate_ip/requirements.txt --target=/ipam/python/allocate_ip
 RUN pip3 install -r /ipam/python/deallocate_ip/requirements.txt --target=/ipam/python/deallocate_ip

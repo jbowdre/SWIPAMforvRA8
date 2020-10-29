@@ -1,2 +1,4 @@
 requests==2.21.0
-OrionSDK
+orionsdk
+ipaddress
+datetime
