@@ -34,6 +34,7 @@ def do_get_ip_ranges(self, auth_credentials, cert):
     result_ranges = []
     qResult = swis.query("SELECT DISTINCT GroupID AS id, FriendlyName AS name, Address AS addressSpaceId, CIDR AS subnetPrefixLength, Comments AS description, i.CustomProperties.Gateway as gatewayAddress, i.CustomProperties.DNS_Servers as dnsServers, i.CustomProperties.Site_ID AS siteId FROM IPAM.GroupNode i WHERE GroupTypeText LIKE 'Subnet' AND i.CustomProperties.VRA_Range = TRUE")
     for range in qResult['results']:
+      logging.info(f"Found subnet: {str(range['name'])}")
       network = ipaddress.ip_network(str(range['addressSpaceId']) + '/' + str(range['subnetPrefixLength']))
       range['ipVersion'] = 'IPv' + str(network.version)
       range['startIPAddress'] = str(network[10])
