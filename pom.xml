@@ -22,8 +22,8 @@ conditions of the subcomponent's license, as noted in the LICENSE file.
 
     <properties>
         <provider.name>Solarwinds IPAM</provider.name>
-        <provider.description>Solarwinds IPAM integration for vRA</provider.description>
-        <provider.version>0.1</provider.version>
+        <provider.description>Solarwinds IPAM integration for vRA(c) 8.x</provider.description>
+        <provider.version>1.0</provider.version>
 
         <provider.supportsAddressSpaces>false</provider.supportsAddressSpaces>
         <provider.supportsUpdateRecord>true</provider.supportsUpdateRecord>
