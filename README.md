@@ -9,4 +9,4 @@ This expects several custom properties to exist in Solarwinds for each IPAM-mana
 - `Site_ID`: 3-character identifier
 - `vRA_Range`: boolean; true if you want the subnet to be used by vRA
 
-Or you can edit `src/main/python/get_ip_ranges/source.python` to remove/change this requirement.
+Or you can edit `src/main/python/get_ip_ranges/source.py` to remove/change this requirement.

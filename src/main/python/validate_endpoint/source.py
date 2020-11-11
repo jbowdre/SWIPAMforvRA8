@@ -1,4 +1,7 @@
 """
+Modified by John Bowdre to support Solarwinds IPAM
+Initial release: 11/10/2020
+
 Copyright (c) 2020 VMware, Inc.
 
 This product is licensed to you under the Apache License, Version 2.0 (the "License").
