@@ -2,7 +2,7 @@ Basic Solarwinds IPAM integration plugin for vRA(C) 8.x
 ============
 
 > [!IMPORTANT]
-> This project is no longer maintained. Feel free to use it as a starting point for your own efforts, but I won't be updating it any further.
+> This project is no longer maintained, and I'm sure it's quite out of date at this point. Feel free to use it as a starting point for your own efforts, but I won't be updating it any further.
 
 This contains the Python source files I used to create a basic IPAM integration so our vRA 8.x environment could leverage Solarwinds IPAM. See https://code.vmware.com/web/sdk/1.0.0/vmware-vrealize-automation-third-party-ipam-sdk to obtain the necessary SDK and https://docs.vmware.com/en/VMware-Cloud-services/1.0/ipam_integration_contract_reqs.pdf for the technical details. 
 
